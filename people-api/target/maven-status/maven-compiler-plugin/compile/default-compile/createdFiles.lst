@@ -1,1 +1,8 @@
+com/people/api/entities/Person.class
+com/people/api/entities/dto/PersonDTO.class
+com/people/api/controllers/PersonController.class
+com/people/api/entities/Person$PersonBuilder.class
+com/people/api/entities/dto/PersonDTO$PersonDTOBuilder.class
 com/people/api/Application.class
+com/people/api/services/PersonService.class
+com/people/api/repositories/PersonRepository.class

@@ -1,1 +1,6 @@
-/home/vitorreck/Documents/Projects/repos/people-api/src/main/java/com/people/api/Application.java
+/home/vitorreck/Documents/Projects/repos/people-api/people-api/src/main/java/com/people/api/Application.java
+/home/vitorreck/Documents/Projects/repos/people-api/people-api/src/main/java/com/people/api/controllers/PersonController.java
+/home/vitorreck/Documents/Projects/repos/people-api/people-api/src/main/java/com/people/api/entities/Person.java
+/home/vitorreck/Documents/Projects/repos/people-api/people-api/src/main/java/com/people/api/entities/dto/PersonDTO.java
+/home/vitorreck/Documents/Projects/repos/people-api/people-api/src/main/java/com/people/api/repositories/PersonRepository.java
+/home/vitorreck/Documents/Projects/repos/people-api/people-api/src/main/java/com/people/api/services/PersonService.java
