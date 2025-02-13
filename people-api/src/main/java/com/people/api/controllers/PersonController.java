@@ -18,29 +18,31 @@ public class PersonController {
 
   @GetMapping
   public ResponseEntity<List<PersonDTO>> getAllPersons() {
-    return ResponseEntity.ok(service.listPersons());
+    List<PersonDTO> list = service.listPersons();
+    return new ResponseEntity<>(list, HttpStatus.OK);
   }
   
   @GetMapping("/{id}")
   public ResponseEntity<PersonDTO> getPerson(@PathVariable Long id) {
-    return ResponseEntity.ok(service.getPerson(id));
+    PersonDTO dto = service.getPerson(id);
+    return new ResponseEntity<>(dto, HttpStatus.OK);
   }
 
   @PostMapping
   public ResponseEntity<String> postPerson(@RequestBody PersonDTO dto) {
     service.createPerson(dto);
-    return new ResponseEntity<>("ai ai ui ui", HttpStatus.CREATED);
+    return new ResponseEntity<>("Resource created with success", HttpStatus.CREATED);
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<String> updatePerson(@PathVariable Long id, @RequestBody PersonDTO dto) {
     service.updatePerson(id, dto);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    return new ResponseEntity<>("Resource updated with success", HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<String> deletePerson(@PathVariable Long id) {
     service.deletePerson(id);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    return new ResponseEntity<>("Resource deleted with success", HttpStatus.OK);
   }
 }
