@@ -1,14 +1,15 @@
 package com.people.api.services;
 
-import com.people.api.entities.Person;
+import com.people.api.entities.model.Person;
 import com.people.api.entities.dto.PersonDTO;
-import com.people.api.exceptions.NotFoundException;
+import com.people.api.exceptions.EntityNotFoundException;
 import com.people.api.repositories.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -17,55 +18,76 @@ import java.util.stream.Collectors;
 @Log4j2
 public class PersonService {
 
-  private final PersonRepository repository;
+  private final PersonRepository personRepository;
+  private static final String PERSON_NOT_FOUND = "Person not found";
 
   public List<PersonDTO> listPersons() {
-    return repository.findAll().stream()
-        .map(PersonDTO::mapToDTO)
+    return personRepository.findAll().stream()
+        .map(this::mapToDTO)
         .collect(Collectors.toList());
   }
 
-  public PersonDTO getPerson(Long id) {
-    log.info("Retrieving resource with id: {}", id);
-    Optional<Person> optPerson = repository.findById(id);
+  public PersonDTO getPersonById(Long id) {
+    log.info("Retrieving person by id: {}", id);
+    Optional<Person> optPerson = personRepository.findById(id);
 
     if(optPerson.isPresent())
-      return PersonDTO.mapToDTO(optPerson.get());
+      return this.mapToDTO(optPerson.get());
     else
-      throw new NotFoundException();
+      throw new EntityNotFoundException(PERSON_NOT_FOUND);
   }
 
-  public void createPerson(PersonDTO dto) {
-    Person entity = PersonDTO.mapToEntity(dto);
+  public void savePerson(PersonDTO dto) {
+    Person entity = mapToEntity(dto);
 
-    repository.save(entity);
-    log.info("Resource {}: has been created", entity.getId());
+    personRepository.save(entity);
+    log.info("Person by id {}: has been created", entity.getId());
   }
 
   public void updatePerson(Long id, PersonDTO dto) {
-    Optional<Person> optPerson = repository.findById(id);
+    Optional<Person> optPerson = personRepository.findById(id);
 
     if(optPerson.isPresent()) {
-      Person entity = PersonDTO.mapToEntity(dto);
+      Person entity = this.mapToEntity(dto);
       entity.setId(id);
-      repository.save(entity);
-      log.info("Resource {}: has been updated", entity.getId());
+      personRepository.save(entity);
+      log.info("Person by id {}: has been updated", entity.getId());
     }
     else {
-      throw new NotFoundException();
+      throw new EntityNotFoundException(PERSON_NOT_FOUND);
     }
   }
 
-  public void deletePerson(Long id) {
-    Optional<Person> optPerson = repository.findById(id);
+  public void deletePersonById(Long id) {
+    Optional<Person> optPerson = personRepository.findById(id);
 
     if(optPerson.isPresent()) {
       Person entity = optPerson.get();
-      repository.delete(entity);
-      log.info("Resource {}: has been removed", entity.getId());
+      personRepository.delete(entity);
+      log.info("Person by id {}: has been removed", entity.getId());
     }
     else {
-      throw new NotFoundException();
+      throw new EntityNotFoundException(PERSON_NOT_FOUND);
     }
+  }
+
+  public PersonDTO mapToDTO(Person person) {
+    return PersonDTO.builder()
+        .name(person.getName())
+        .gender(person.getGender())
+        .registrationNumber(person.getRegistrationNumber())
+        .birthday(person.getBirthday())
+        .jobTitle(person.getJobTitle())
+        .build();
+  }
+
+  public Person mapToEntity(PersonDTO personDTO) {
+    return Person.builder()
+        .name(personDTO.getName())
+        .gender(personDTO.getGender())
+        .registrationNumber(personDTO.getRegistrationNumber())
+        .birthday(personDTO.getBirthday())
+        .jobTitle(personDTO.getJobTitle())
+        .build();
   }
 }

@@ -1,19 +1,18 @@
-package com.people.api.entities;
+package com.people.api.entities.model;
 
 import com.people.api.entities.enums.GenderEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
+@Entity
+@Table(name = "persons")
 public class Person {
 
   @Id

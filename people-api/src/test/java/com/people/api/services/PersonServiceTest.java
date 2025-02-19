@@ -1,8 +1,8 @@
 package com.people.api.services;
 
-import com.people.api.entities.Person;
+import com.people.api.entities.model.Person;
 import com.people.api.entities.dto.PersonDTO;
-import com.people.api.exceptions.NotFoundException;
+import com.people.api.exceptions.EntityNotFoundException;
 import com.people.api.repositories.PersonRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,13 +22,13 @@ import static org.mockito.Mockito.*;
 class PersonServiceTest {
 
   @InjectMocks
-  private PersonService service;
+  private PersonService personService;
 
   @Mock
-  private PersonRepository repository;
+  private PersonRepository personRepository;
 
   private Person person;
-  private PersonDTO dto;
+  private PersonDTO personDTO;
   private PersonService mockService;
 
   @BeforeEach
@@ -36,31 +37,31 @@ class PersonServiceTest {
         .registrationNumber("123")
         .build();
 
-    dto = PersonDTO.mapToDTO(person);
+    personDTO = personService.mapToDTO(person);
     mockService = mock(PersonService.class);
   }
 
   @Test
-  void testShouldReturn_PersonById() {
-    when(repository.findById(anyLong())).thenReturn(Optional.of(person));
+  void testGetPersonById_ShouldReturnNotNull() {
+    when(personRepository.findById(anyLong())).thenReturn(Optional.of(person));
 
-    PersonDTO result = service.getPerson(anyLong());
+    PersonDTO result = personService.getPersonById(anyLong());
 
     assertNotNull(result);
     assertEquals("123", result.getRegistrationNumber());
   }
 
   @Test
-  void testShouldCreate_Person() {
-    mockService.createPerson(dto);
-    verify(mockService, times(1)).createPerson(dto);
+  void testSavePerson_ShouldBeFulfilled() {
+    mockService.savePerson(personDTO);
+    verify(mockService, times(1)).savePerson(personDTO);
   }
 
   @Test
-  void testShouldThrow_NotFound() {
-    doThrow(NotFoundException.class)
-        .when(mockService).deletePerson(anyLong());
+  void testDeletePersonById_ShouldThrowNoSuchElement() {
+    doThrow(EntityNotFoundException.class)
+        .when(mockService).deletePersonById(anyLong());
 
-    assertThrows(NotFoundException.class, () -> mockService.deletePerson(anyLong()));
+    assertThrows(EntityNotFoundException.class, () -> mockService.deletePersonById(anyLong()));
   }
 }

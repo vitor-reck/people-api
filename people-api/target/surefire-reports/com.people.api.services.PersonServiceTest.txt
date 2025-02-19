@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.people.api.services.PersonServiceTest
--------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.755 s -- in com.people.api.services.PersonServiceTest

@@ -19,33 +19,33 @@ import static org.mockito.Mockito.*;
 class PersonControllerTest {
 
   @InjectMocks
-  private PersonController controller;
+  private PersonController personController;
 
   @Mock
-  private PersonService service;
-  private PersonDTO dto;
+  private PersonService personService;
+  private PersonDTO personDTO;
 
   @BeforeEach
   void setUp() {
-    dto = PersonDTO.builder()
+    personDTO = PersonDTO.builder()
         .registrationNumber("123")
         .build();
   }
 
   @Test
-  void testShouldReturn_StatusCreated() {
-    ResponseEntity<String> result = controller.postPerson(dto);
+  void testPostPerson_ShouldReturn_StatusCreated() {
+    ResponseEntity<String> result = personController.postPerson(personDTO);
 
     assertEquals(HttpStatus.CREATED, result.getStatusCode());
   }
 
   @Test
-  void testShouldReturn_StatusOK_And_GetBodyMessage() {
-    when(service.getPerson(anyLong())).thenReturn(dto);
+  void testGetPersonById_ShouldReturn_StatusOK_And_DTO() {
+    when(personService.getPersonById(anyLong())).thenReturn(personDTO);
 
-    ResponseEntity<PersonDTO> result = controller.getPerson(anyLong());
+    ResponseEntity<PersonDTO> result = personController.getPersonById(anyLong());
 
     assertEquals(HttpStatus.OK, result.getStatusCode());
-    assertEquals(dto, result.getBody());
+    assertEquals(personDTO, result.getBody());
   }
 }
