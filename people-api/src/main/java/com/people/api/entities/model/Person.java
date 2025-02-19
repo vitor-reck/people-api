@@ -19,6 +19,8 @@ public class Person {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
   private String name;
+
+  @Enumerated(EnumType.STRING)
   private GenderEnum gender;
 
   @Column(unique = true)
