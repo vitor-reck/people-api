@@ -7,7 +7,7 @@ COPY . .
 RUN mvn clean package
 
 
-FROM eclipse-temurin:17-jdk
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
