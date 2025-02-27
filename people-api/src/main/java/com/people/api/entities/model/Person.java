@@ -23,7 +23,6 @@ public class Person {
   @Enumerated(EnumType.STRING)
   private GenderEnum gender;
 
-  @Column(unique = true)
   private String registrationNumber;
   private LocalDate birthday;
   private String jobTitle;

@@ -1,18 +1,18 @@
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
 
 WORKDIR /app
 
-COPY . .
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-RUN mvn clean package
+COPY src ./src
+RUN mvn clean package -DskipTests --no-transfer-progress
 
 
-FROM eclipse-temurin:17-jre-alpine
+FROM amazoncorretto:17-alpine
 
 WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
 
-EXPOSE 8080
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "app.jar"]

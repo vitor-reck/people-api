@@ -2,8 +2,8 @@ package com.people.api.services;
 
 import com.people.api.entities.model.Person;
 import com.people.api.entities.dto.PersonDTO;
-import com.people.api.exceptions.EntityNotFoundException;
 import com.people.api.repositories.PersonRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;

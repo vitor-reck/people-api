@@ -2,73 +2,77 @@ package com.people.api.services;
 
 import com.people.api.entities.model.Person;
 import com.people.api.entities.dto.PersonDTO;
-import com.people.api.exceptions.EntityNotFoundException;
 import com.people.api.repositories.PersonRepository;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class PersonService {
 
+  private final static String PERSON_NOT_FOUND = "Person not found";
+  private final static String PERSON_ALREADY_PERSISTED = "Person already persisted";
   private final PersonRepository personRepository;
-  private static final String PERSON_NOT_FOUND = "Person not found";
 
-  public List<PersonDTO> listPersons() {
-    return personRepository.findAll().stream()
-        .map(this::mapToDTO)
-        .collect(Collectors.toList());
+  public List<PersonDTO> listPersons(Pageable pageable) {
+    return personRepository.findAll(pageable)
+        .map(this::mapToDTO).getContent();
   }
 
   public PersonDTO getPersonById(Long id) {
-    log.info("Retrieving person by id: {}", id);
-    Optional<Person> optPerson = personRepository.findById(id);
+    log.info("Retrieving person with id: {}", id);
 
-    if(optPerson.isPresent())
-      return this.mapToDTO(optPerson.get());
-    else
-      throw new EntityNotFoundException(PERSON_NOT_FOUND);
+    return personRepository.findById(id)
+        .map(this::mapToDTO)
+        .orElseThrow(() -> new EntityNotFoundException(PERSON_NOT_FOUND));
+  }
+
+  public PersonDTO getPersonByRegistrationNumber(String registrationNumber) {
+    log.info("Retrieving person with registration number: {}", registrationNumber);
+
+    return personRepository.findByRegistrationNumber(registrationNumber)
+        .map(this::mapToDTO)
+        .orElseThrow(() -> new EntityNotFoundException(PERSON_NOT_FOUND));
   }
 
   public void savePerson(PersonDTO dto) {
-    Person entity = mapToEntity(dto);
+    personRepository.findByRegistrationNumber(dto.getRegistrationNumber())
+        .ifPresent(person -> {throw new EntityExistsException(PERSON_ALREADY_PERSISTED);});
 
-    personRepository.save(entity);
-    log.info("Person by id {}: has been created", entity.getId());
+    Long savedPersonId = personRepository.save(mapToEntity(dto)).getId();
+    log.info("Person with id {}: has been created", savedPersonId);
   }
 
   public void updatePerson(Long id, PersonDTO dto) {
-    Optional<Person> optPerson = personRepository.findById(id);
+    personRepository.findById(id)
+        .ifPresentOrElse(person -> {
+          person.setName(dto.getName());
+          person.setGender(dto.getGender());
+          person.setRegistrationNumber(dto.getRegistrationNumber());
+          person.setBirthday(dto.getBirthday());
+          person.setJobTitle(dto.getJobTitle());
 
-    if(optPerson.isPresent()) {
-      Person entity = this.mapToEntity(dto);
-      entity.setId(id);
-      personRepository.save(entity);
-      log.info("Person by id {}: has been updated", entity.getId());
-    }
-    else {
-      throw new EntityNotFoundException(PERSON_NOT_FOUND);
-    }
+          personRepository.save(person);
+          log.info("Person with id {}: has been updated", id);
+        },
+            () -> {throw new EntityNotFoundException(PERSON_NOT_FOUND);});
   }
 
   public void deletePersonById(Long id) {
-    Optional<Person> optPerson = personRepository.findById(id);
+    personRepository.findById(id)
+        .ifPresentOrElse(person -> {
+          personRepository.deleteById(id);
 
-    if(optPerson.isPresent()) {
-      Person entity = optPerson.get();
-      personRepository.delete(entity);
-      log.info("Person by id {}: has been removed", entity.getId());
-    }
-    else {
-      throw new EntityNotFoundException(PERSON_NOT_FOUND);
-    }
+          log.info("Person with id {}: has been removed", id);
+        },
+            () -> {throw new EntityNotFoundException(PERSON_NOT_FOUND);});
   }
 
   public PersonDTO mapToDTO(Person person) {
