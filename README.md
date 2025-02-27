@@ -1,10 +1,11 @@
 # people-api v1
-A simple REST API for people management
+Simples REST Api for people management, include basic CRUD operations on service layer architecture + repository pattern
 
 ## Versions
 - Java 17
-- Spring Boot 3
-- PostgreSQL
+- Spring Framework: Boot, Data and Web
+- Maven 3.9.6
+- PostgreSQL 15
 
 ## Prerequisites
 Need previous install of Docker and Docker-compose, if you already have installed on your system skip to the next steps:
@@ -28,7 +29,3 @@ If you need to stop and remove all containers, networks, and all images used by 
 ```
 docker compose down --rmi all
 ```
-
-## Postman
-This project includes a Postman collection to execute CRUD operations on the API: 
-<em>people-api CRUD.postman_collection.json</em>
